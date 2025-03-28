@@ -24,4 +24,12 @@ export default class Board {
       }
     }
   }
+  collapse(): void {
+    // pick a random cell
+    const randomRow: number = Math.floor(Math.random() * this.rows);
+    const randomCol: number = Math.floor(Math.random() * this.cols);
+    const randomCell: Cell = this.grid[randomRow][randomCol];
+    // collapse the cell
+    randomCell.collapse();
+  }
 }
