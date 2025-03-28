@@ -31,13 +31,16 @@ export default class Cell {
   private setDirection(direction: CellDirection): void {
     this.direction = direction;
   }
+  public isCollapsed(): boolean {
+    return this.direction !== null;
+  }
   public draw(p: p5): void {
     p.stroke("#0e0e0e");
     p.rect(this.i * this.size, this.j * this.size, this.size, this.size);
     if (this.direction === CellDirection.NULL) {
       return;
     }
-    p.stroke("#1e1e1e");
+    p.stroke("#aeaeae");
     if (this.direction !== null) {
       p.push();
       p.translate(
@@ -127,7 +130,7 @@ export default class Cell {
     }
     return possibleNeighborsDirections;
   }
-  public collapse(): void {
+  public collapse(): Cell {
     const neighbors: (Cell | null)[] = this.getNeighbors();
     const possibleDirections: CellDirection[] = [
       CellDirection.DOWN,
@@ -143,12 +146,21 @@ export default class Cell {
       neighbors[2]?.getPossibleNeighborsDirections()[0] || possibleDirections;
     const possibleAccordingToRightNeighbor: (CellDirection | null)[] =
       neighbors[3]?.getPossibleNeighborsDirections()[1] || possibleDirections;
+
+    console.log({ dir: this.direction });
+    console.table({
+      down: possibleAccordingToDownNeighbor,
+      left: possibleAccordingToLeftNeighbor,
+      up: possibleAccordingToUpNeighbor,
+      right: possibleAccordingToRightNeighbor,
+    });
+
     const possibleDirectionsAccordingToNeighbors: CellDirection[] =
       possibleDirections.filter((direction: CellDirection): boolean => {
         return (
-          possibleAccordingToDownNeighbor.includes(direction) ||
-          possibleAccordingToLeftNeighbor.includes(direction) ||
-          possibleAccordingToUpNeighbor.includes(direction) ||
+          possibleAccordingToDownNeighbor.includes(direction) &&
+          possibleAccordingToLeftNeighbor.includes(direction) &&
+          possibleAccordingToUpNeighbor.includes(direction) &&
           possibleAccordingToRightNeighbor.includes(direction)
         );
       });
@@ -164,5 +176,9 @@ export default class Cell {
     } else {
       this.setDirection(CellDirection.NULL);
     }
+    // pick a random neighbor
+    return neighbors.filter(
+      (a: Cell | null): boolean => !!a && !a.isCollapsed()
+    )[Math.floor(Math.random() * neighbors.length)] as Cell;
   }
 }

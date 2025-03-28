@@ -4,6 +4,7 @@ export default class Board {
   grid: Cell[][];
   rows: number;
   cols: number;
+  collapseCell: Cell | null = null;
 
   constructor(rows: number, cols: number, cellSize: number) {
     this.rows = rows;
@@ -25,11 +26,23 @@ export default class Board {
     }
   }
   collapse(): void {
-    // pick a random cell
-    const randomRow: number = Math.floor(Math.random() * this.rows);
-    const randomCol: number = Math.floor(Math.random() * this.cols);
-    const randomCell: Cell = this.grid[randomRow][randomCol];
-    // collapse the cell
-    randomCell.collapse();
+    if (!this.collapseCell) {
+      const unCollapsedCells: Cell[] = [];
+      for (let i: number = 0; i < this.rows; i++) {
+        for (let j: number = 0; j < this.cols; j++) {
+          if (!this.grid[i][j].isCollapsed()) {
+            unCollapsedCells.push(this.grid[i][j]);
+          }
+        }
+      }
+      if (unCollapsedCells.length === 0) {
+        return;
+      }
+      const randomIndex: number = Math.floor(
+        Math.random() * unCollapsedCells.length
+      );
+      this.collapseCell = unCollapsedCells[randomIndex];
+    }
+    this.collapseCell = this.collapseCell.collapse();
   }
 }
