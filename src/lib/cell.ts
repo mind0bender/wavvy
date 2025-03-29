@@ -1,13 +1,16 @@
 import p5 from "p5";
-import Board from "./board";
 
-export enum CellDirection {
-  DOWN,
-  LEFT,
-  UP,
-  RIGHT,
-  NULL,
+declare global {
+  interface Window {
+    p: p5;
+  }
 }
+import Board from "./board";
+import {
+  CellDirection,
+  neighborsForConnection,
+  neighborsForIsolation,
+} from "./neighbors";
 
 export default class Cell {
   i: number;
@@ -37,9 +40,6 @@ export default class Cell {
   public draw(p: p5): void {
     p.stroke("#0e0e0e");
     p.rect(this.i * this.size, this.j * this.size, this.size, this.size);
-    if (this.direction === CellDirection.NULL) {
-      return;
-    }
     p.stroke("#aeaeae");
     if (this.direction !== null) {
       p.push();
@@ -47,11 +47,83 @@ export default class Cell {
         this.i * this.size + this.size / 2,
         this.j * this.size + this.size / 2
       );
-      p.rotate(this.direction * (Math.PI / 2));
-      p.line(0, 0, 0, this.size / 2);
-      p.line(-this.size / 2, 0, this.size / 2, 0);
+      switch (this.direction) {
+        case CellDirection.DOWN:
+        case CellDirection.UP:
+        case CellDirection.LEFT:
+        case CellDirection.RIGHT:
+          p.rotate(this.direction * (Math.PI / 2));
+          p.line(0, 0, 0, this.size / 2);
+          p.line(-this.size / 2, 0, this.size / 2, 0);
+          break;
+        case CellDirection.HORIZONTAL:
+          p.line(-this.size / 2, 0, this.size / 2, 0);
+          break;
+        case CellDirection.VERTICAL:
+          p.line(0, -this.size / 2, 0, this.size / 2);
+          break;
+        case CellDirection.DOWNLEFT:
+          p.line(0, this.size / 2, -this.size / 2, 0);
+          break;
+        case CellDirection.UPLEFT:
+          p.line(-this.size / 2, 0, 0, -this.size / 2);
+          break;
+        case CellDirection.UPRIGHT:
+          p.line(0, -this.size / 2, this.size / 2, 0);
+          break;
+        case CellDirection.DOWNRIGHT:
+          p.line(this.size / 2, 0, 0, this.size / 2);
+          break;
+        case CellDirection.CROSS:
+          p.line(0, this.size / 2, -this.size / 2, 0);
+          p.line(-this.size / 2, 0, 0, -this.size / 2);
+          p.line(0, -this.size / 2, this.size / 2, 0);
+          p.line(this.size / 2, 0, 0, this.size / 2);
+          break;
+
+        default:
+          break;
+      }
       p.pop();
     }
+    // if (this.isCollapsed()) {
+    //   // write the direction of the cell on the cell
+    //   p.fill("#fff");
+    //   p.textAlign(p.CENTER, p.CENTER);
+    //   p.textSize(this.size / 5);
+    //   // p.textFont("monospace");
+    //   // p.textStyle(p.BOLD);
+    //   // p.textLeading(this.size / 2);
+    //   p.text(
+    //     this.direction === CellDirection.BLANK
+    //       ? "0"
+    //       : this.direction === CellDirection.CROSS
+    //       ? "X"
+    //       : this.direction === CellDirection.HORIZONTAL
+    //       ? "--"
+    //       : this.direction === CellDirection.VERTICAL
+    //       ? "|"
+    //       : this.direction === CellDirection.DOWN
+    //       ? "D"
+    //       : this.direction === CellDirection.LEFT
+    //       ? "L"
+    //       : this.direction === CellDirection.UP
+    //       ? "U"
+    //       : this.direction === CellDirection.RIGHT
+    //       ? "R"
+    //       : this.direction === CellDirection.DOWNLEFT
+    //       ? "DL"
+    //       : this.direction === CellDirection.UPLEFT
+    //       ? "UL"
+    //       : this.direction === CellDirection.UPRIGHT
+    //       ? "UR"
+    //       : this.direction === CellDirection.DOWNRIGHT
+    //       ? "DR"
+    //       : "??",
+    //     this.i * this.size + this.size / 2,
+    //     this.j * this.size + this.size / 2
+    //   );
+    // }
   }
   private getNeighbors(): (Cell | null)[] {
     const neighbors: (Cell | null)[] = [];
@@ -89,54 +161,126 @@ export default class Cell {
     switch (this.direction) {
       case CellDirection.DOWN:
         possibleNeighborsDirections.push(
-          [CellDirection.LEFT, CellDirection.UP, CellDirection.RIGHT],
-          [CellDirection.DOWN, CellDirection.UP, CellDirection.RIGHT],
-          [CellDirection.UP, CellDirection.NULL],
-          [CellDirection.DOWN, CellDirection.LEFT, CellDirection.UP]
+          neighborsForConnection[0],
+          neighborsForConnection[1],
+          neighborsForIsolation[2],
+          neighborsForConnection[3]
         );
         break;
       case CellDirection.LEFT:
         possibleNeighborsDirections.push(
-          [CellDirection.LEFT, CellDirection.UP, CellDirection.RIGHT],
-          [CellDirection.DOWN, CellDirection.UP, CellDirection.RIGHT],
-          [CellDirection.DOWN, CellDirection.LEFT, CellDirection.RIGHT],
-          [CellDirection.RIGHT, CellDirection.NULL]
+          neighborsForConnection[0],
+          neighborsForConnection[1],
+          neighborsForConnection[2],
+          neighborsForIsolation[3]
         );
         break;
       case CellDirection.UP:
         possibleNeighborsDirections.push(
-          [CellDirection.DOWN, CellDirection.NULL],
-          [CellDirection.DOWN, CellDirection.UP, CellDirection.RIGHT],
-          [CellDirection.DOWN, CellDirection.LEFT, CellDirection.RIGHT],
-          [CellDirection.DOWN, CellDirection.LEFT, CellDirection.UP]
+          neighborsForIsolation[0],
+          neighborsForConnection[1],
+          neighborsForConnection[2],
+          neighborsForConnection[3]
         );
         break;
       case CellDirection.RIGHT:
         possibleNeighborsDirections.push(
-          [CellDirection.LEFT, CellDirection.UP, CellDirection.RIGHT],
-          [CellDirection.LEFT, CellDirection.NULL],
-          [CellDirection.DOWN, CellDirection.LEFT, CellDirection.RIGHT],
-          [CellDirection.LEFT, CellDirection.DOWN, CellDirection.UP]
+          neighborsForConnection[0],
+          neighborsForIsolation[1],
+          neighborsForConnection[2],
+          neighborsForConnection[3]
         );
         break;
-      case CellDirection.NULL:
+      case CellDirection.BLANK:
         possibleNeighborsDirections.push(
-          [CellDirection.DOWN, CellDirection.NULL],
-          [CellDirection.LEFT, CellDirection.NULL],
-          [CellDirection.UP, CellDirection.NULL],
-          [CellDirection.RIGHT, CellDirection.NULL]
+          neighborsForIsolation[0],
+          neighborsForIsolation[1],
+          neighborsForIsolation[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.HORIZONTAL:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForConnection[1],
+          neighborsForIsolation[2],
+          neighborsForConnection[3]
+        );
+        break;
+      case CellDirection.VERTICAL:
+        possibleNeighborsDirections.push(
+          neighborsForConnection[0],
+          neighborsForIsolation[1],
+          neighborsForConnection[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.DOWNLEFT:
+        possibleNeighborsDirections.push(
+          neighborsForConnection[0],
+          neighborsForConnection[1],
+          neighborsForIsolation[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.UPLEFT:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForConnection[1],
+          neighborsForConnection[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.UPRIGHT:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForIsolation[1],
+          neighborsForConnection[2],
+          neighborsForConnection[3]
+        );
+        break;
+      case CellDirection.DOWNRIGHT:
+        possibleNeighborsDirections.push(
+          neighborsForConnection[0],
+          neighborsForIsolation[1],
+          neighborsForIsolation[2],
+          neighborsForConnection[3]
+        );
+        break;
+      case CellDirection.CROSS:
+        possibleNeighborsDirections.push(
+          neighborsForConnection[0],
+          neighborsForConnection[1],
+          neighborsForConnection[2],
+          neighborsForConnection[3]
+        );
+        break;
+      case CellDirection.BLANK:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForIsolation[1],
+          neighborsForIsolation[2],
+          neighborsForIsolation[3]
         );
         break;
     }
     return possibleNeighborsDirections;
   }
-  public collapse(): Cell {
+  public collapse(): Cell | null {
     const neighbors: (Cell | null)[] = this.getNeighbors();
     const possibleDirections: CellDirection[] = [
       CellDirection.DOWN,
       CellDirection.LEFT,
       CellDirection.UP,
       CellDirection.RIGHT,
+      CellDirection.BLANK,
+      CellDirection.HORIZONTAL,
+      CellDirection.VERTICAL,
+      CellDirection.DOWNLEFT,
+      CellDirection.UPLEFT,
+      CellDirection.UPRIGHT,
+      CellDirection.DOWNRIGHT,
+      CellDirection.CROSS,
     ];
     const possibleAccordingToDownNeighbor: (CellDirection | null)[] =
       neighbors[0]?.getPossibleNeighborsDirections()[2] || possibleDirections;
@@ -147,14 +291,6 @@ export default class Cell {
     const possibleAccordingToRightNeighbor: (CellDirection | null)[] =
       neighbors[3]?.getPossibleNeighborsDirections()[1] || possibleDirections;
 
-    // console.log({ dir: this.direction });
-    // console.table({
-    //   down: possibleAccordingToDownNeighbor,
-    //   left: possibleAccordingToLeftNeighbor,
-    //   up: possibleAccordingToUpNeighbor,
-    //   right: possibleAccordingToRightNeighbor,
-    // });
-
     const possibleDirectionsAccordingToNeighbors: CellDirection[] =
       possibleDirections.filter((direction: CellDirection): boolean => {
         return (
@@ -164,29 +300,36 @@ export default class Cell {
           possibleAccordingToRightNeighbor.includes(direction)
         );
       });
-    // console.log(possibleDirectionsAccordingToNeighbors);
-    if (possibleDirectionsAccordingToNeighbors.length > 0) {
-      this.setDirection(
-        possibleDirectionsAccordingToNeighbors[
-          Math.floor(
-            Math.random() * possibleDirectionsAccordingToNeighbors.length
-          )
-        ]
-      );
-    } else {
-      this.setDirection(CellDirection.NULL);
-    }
+    this.setDirection(
+      possibleDirectionsAccordingToNeighbors[
+        Math.floor(
+          Math.random() * possibleDirectionsAccordingToNeighbors.length
+        )
+      ]
+    );
     // pick a random neighbor
     const filteredNeighbors: Cell[] = neighbors.filter(
       (a: Cell | null): boolean => !!a && !a.isCollapsed()
     ) as Cell[];
 
-    const nextCell = filteredNeighbors[
-      Math.floor(Math.random() * filteredNeighbors.length)
-    ] as Cell;
-    if (!nextCell) {
-      console.table({ neighbors });
+    const randomIndex: number = Math.floor(
+      Math.random() * filteredNeighbors.length
+    );
+    if (filteredNeighbors.length === 0) {
+      // window.p.noLoop();
+      console.log({
+        pos: [this.i, this.j],
+        possibleDirectionsAccordingToNeighbors,
+        individual: [
+          possibleAccordingToDownNeighbor,
+          possibleAccordingToLeftNeighbor,
+          possibleAccordingToUpNeighbor,
+          possibleAccordingToRightNeighbor,
+        ],
+      });
+      return null;
     }
+    const nextCell: Cell = filteredNeighbors[randomIndex];
     return nextCell;
   }
 }

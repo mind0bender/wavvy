@@ -7,7 +7,14 @@ export default function setup(p: p5): void {
   const minWidth: number =
     [innerHeight, innerWidth][Number(innerHeight > innerWidth)] - 40 * 2;
   p.createCanvas(minWidth, minWidth);
-  //   p.frameRate(1);
+  // p.frameRate(10);
+  p.mousePressed = (): void => {
+    if (p.isLooping()) {
+      p.noLoop();
+    } else {
+      p.loop();
+    }
+  };
   board = new Board(50, 50, minWidth / 50);
   p.fill("#000");
   p.stroke("#1e1e1e");

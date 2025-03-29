@@ -1,0 +1,84 @@
+export enum CellDirection {
+  DOWN,
+  LEFT,
+  UP,
+  RIGHT,
+  BLANK,
+  HORIZONTAL,
+  VERTICAL,
+  DOWNLEFT,
+  UPLEFT,
+  UPRIGHT,
+  DOWNRIGHT,
+  CROSS,
+}
+
+export const neighborsForConnection: CellDirection[][] = [
+  [
+    CellDirection.LEFT,
+    CellDirection.UP,
+    CellDirection.RIGHT,
+    CellDirection.VERTICAL,
+    CellDirection.UPLEFT,
+    CellDirection.UPRIGHT,
+    CellDirection.CROSS,
+  ],
+  [
+    CellDirection.DOWN,
+    CellDirection.UP,
+    CellDirection.RIGHT,
+    CellDirection.HORIZONTAL,
+    CellDirection.UPRIGHT,
+    CellDirection.DOWNRIGHT,
+    CellDirection.CROSS,
+  ],
+  [
+    CellDirection.DOWN,
+    CellDirection.LEFT,
+    CellDirection.RIGHT,
+    CellDirection.VERTICAL,
+    CellDirection.DOWNLEFT,
+    CellDirection.DOWNRIGHT,
+    CellDirection.CROSS,
+  ],
+  [
+    CellDirection.DOWN,
+    CellDirection.LEFT,
+    CellDirection.UP,
+    CellDirection.HORIZONTAL,
+    CellDirection.DOWNLEFT,
+    CellDirection.UPLEFT,
+    CellDirection.CROSS,
+  ],
+];
+
+export const neighborsForIsolation: CellDirection[][] = [
+  [
+    CellDirection.BLANK,
+    CellDirection.DOWN,
+    CellDirection.HORIZONTAL,
+    CellDirection.DOWNLEFT,
+    CellDirection.DOWNRIGHT,
+  ],
+  [
+    CellDirection.BLANK,
+    CellDirection.LEFT,
+    CellDirection.VERTICAL,
+    CellDirection.DOWNLEFT,
+    CellDirection.UPLEFT,
+  ],
+  [
+    CellDirection.BLANK,
+    CellDirection.UP,
+    CellDirection.HORIZONTAL,
+    CellDirection.UPLEFT,
+    CellDirection.UPRIGHT,
+  ],
+  [
+    CellDirection.BLANK,
+    CellDirection.RIGHT,
+    CellDirection.VERTICAL,
+    CellDirection.DOWNRIGHT,
+    CellDirection.UPRIGHT,
+  ],
+];
