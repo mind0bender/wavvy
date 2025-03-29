@@ -8,11 +8,14 @@ export default function setup(p: p5): void {
     [innerHeight, innerWidth][Number(innerHeight > innerWidth)] - 40 * 2;
   p.createCanvas(minWidth, minWidth);
   //   p.frameRate(1);
-  board = new Board(10, 10, minWidth / 10);
+  board = new Board(50, 50, minWidth / 50);
   p.fill("#000");
   p.stroke("#1e1e1e");
   Object.defineProperty(window, "p", {
-    get: () => p,
+    get: (): p5 => p,
+  } as PropertyDescriptorMap & ThisType<any>);
+  Object.defineProperty(window, "board", {
+    get: (): Board => board,
   } as PropertyDescriptorMap & ThisType<any>);
 
   console.log("Setup complete.");

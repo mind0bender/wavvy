@@ -21,7 +21,7 @@ export default class Cell {
     this.j = j;
     this.size = size;
     this.board = board;
-    // Randomly assign a direction
+    // // Randomly assign a direction
     // const randomDirection: number = Math.floor(Math.random() * 4);
     // this.direction = randomDirection as CellDirection;
   }
@@ -147,13 +147,13 @@ export default class Cell {
     const possibleAccordingToRightNeighbor: (CellDirection | null)[] =
       neighbors[3]?.getPossibleNeighborsDirections()[1] || possibleDirections;
 
-    console.log({ dir: this.direction });
-    console.table({
-      down: possibleAccordingToDownNeighbor,
-      left: possibleAccordingToLeftNeighbor,
-      up: possibleAccordingToUpNeighbor,
-      right: possibleAccordingToRightNeighbor,
-    });
+    // console.log({ dir: this.direction });
+    // console.table({
+    //   down: possibleAccordingToDownNeighbor,
+    //   left: possibleAccordingToLeftNeighbor,
+    //   up: possibleAccordingToUpNeighbor,
+    //   right: possibleAccordingToRightNeighbor,
+    // });
 
     const possibleDirectionsAccordingToNeighbors: CellDirection[] =
       possibleDirections.filter((direction: CellDirection): boolean => {
@@ -164,7 +164,7 @@ export default class Cell {
           possibleAccordingToRightNeighbor.includes(direction)
         );
       });
-    console.log(possibleDirectionsAccordingToNeighbors);
+    // console.log(possibleDirectionsAccordingToNeighbors);
     if (possibleDirectionsAccordingToNeighbors.length > 0) {
       this.setDirection(
         possibleDirectionsAccordingToNeighbors[
@@ -177,8 +177,16 @@ export default class Cell {
       this.setDirection(CellDirection.NULL);
     }
     // pick a random neighbor
-    return neighbors.filter(
+    const filteredNeighbors: Cell[] = neighbors.filter(
       (a: Cell | null): boolean => !!a && !a.isCollapsed()
-    )[Math.floor(Math.random() * neighbors.length)] as Cell;
+    ) as Cell[];
+
+    const nextCell = filteredNeighbors[
+      Math.floor(Math.random() * filteredNeighbors.length)
+    ] as Cell;
+    if (!nextCell) {
+      console.table({ neighbors });
+    }
+    return nextCell;
   }
 }
