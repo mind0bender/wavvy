@@ -38,7 +38,12 @@ export default class Cell {
     return this.direction !== null;
   }
   public draw(p: p5): void {
-    p.stroke("#0e0e0e");
+    p.stroke("#000");
+    // if (this.isCollapsed()) {
+    //   p.fill("#000");
+    // } else {
+    //   p.fill("#333");
+    // }
     p.rect(this.i * this.size, this.j * this.size, this.size, this.size);
     p.stroke("#aeaeae");
     if (this.direction !== null) {
@@ -82,48 +87,11 @@ export default class Cell {
           break;
 
         default:
+          p.rect(-this.size / 2, -this.size / 2, this.size - 2);
           break;
       }
       p.pop();
     }
-    // if (this.isCollapsed()) {
-    //   // write the direction of the cell on the cell
-    //   p.fill("#fff");
-    //   p.textAlign(p.CENTER, p.CENTER);
-    //   p.textSize(this.size / 5);
-    //   // p.textFont("monospace");
-    //   // p.textStyle(p.BOLD);
-    //   // p.textLeading(this.size / 2);
-    //   p.text(
-    //     this.direction === CellDirection.BLANK
-    //       ? "0"
-    //       : this.direction === CellDirection.CROSS
-    //       ? "X"
-    //       : this.direction === CellDirection.HORIZONTAL
-    //       ? "--"
-    //       : this.direction === CellDirection.VERTICAL
-    //       ? "|"
-    //       : this.direction === CellDirection.DOWN
-    //       ? "D"
-    //       : this.direction === CellDirection.LEFT
-    //       ? "L"
-    //       : this.direction === CellDirection.UP
-    //       ? "U"
-    //       : this.direction === CellDirection.RIGHT
-    //       ? "R"
-    //       : this.direction === CellDirection.DOWNLEFT
-    //       ? "DL"
-    //       : this.direction === CellDirection.UPLEFT
-    //       ? "UL"
-    //       : this.direction === CellDirection.UPRIGHT
-    //       ? "UR"
-    //       : this.direction === CellDirection.DOWNRIGHT
-    //       ? "DR"
-    //       : "??",
-    //     this.i * this.size + this.size / 2,
-    //     this.j * this.size + this.size / 2
-    //   );
-    // }
   }
   private getNeighbors(): (Cell | null)[] {
     const neighbors: (Cell | null)[] = [];
