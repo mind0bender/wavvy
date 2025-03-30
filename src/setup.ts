@@ -7,7 +7,7 @@ export default function setup(p: p5): void {
   const minWidth: number =
     [innerHeight, innerWidth][Number(innerHeight > innerWidth)] - 40 * 2;
   p.createCanvas(minWidth, minWidth);
-  // p.frameRate(10);
+  // p.frameRate(1);
   p.mousePressed = (): void => {
     if (p.isLooping()) {
       p.noLoop();

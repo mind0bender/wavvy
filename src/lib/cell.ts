@@ -42,7 +42,8 @@ export default class Cell {
     // if (this.isCollapsed()) {
     //   p.fill("#000");
     // } else {
-    //   p.fill("#333");
+    //   p.stroke("#1e1e1e");
+    //   p.fill("#111");
     // }
     p.rect(this.i * this.size, this.j * this.size, this.size, this.size);
     p.stroke("#aeaeae");
@@ -53,13 +54,22 @@ export default class Cell {
         this.j * this.size + this.size / 2
       );
       switch (this.direction) {
+        case CellDirection.DOWNTRI:
+        case CellDirection.UPTRI:
+        case CellDirection.LEFTTRI:
+        case CellDirection.RIGHTTRI:
+          p.rotate(this.direction * (Math.PI / 2));
+          p.line(0, 0, 0, this.size / 2);
+          p.line(-this.size / 2, 0, this.size / 2, 0);
+          break;
         case CellDirection.DOWN:
         case CellDirection.UP:
         case CellDirection.LEFT:
         case CellDirection.RIGHT:
-          p.rotate(this.direction * (Math.PI / 2));
+          p.fill("#000");
+          p.rotate((this.direction - 12) * (Math.PI / 2));
           p.line(0, 0, 0, this.size / 2);
-          p.line(-this.size / 2, 0, this.size / 2, 0);
+          p.circle(0, 0, this.size / 6);
           break;
         case CellDirection.HORIZONTAL:
           p.line(-this.size / 2, 0, this.size / 2, 0);
@@ -80,14 +90,16 @@ export default class Cell {
           p.line(this.size / 2, 0, 0, this.size / 2);
           break;
         case CellDirection.CROSS:
-          p.line(0, this.size / 2, -this.size / 2, 0);
-          p.line(-this.size / 2, 0, 0, -this.size / 2);
-          p.line(0, -this.size / 2, this.size / 2, 0);
-          p.line(this.size / 2, 0, 0, this.size / 2);
+          // p.line(0, this.size / 2, -this.size / 2, 0);
+          // p.line(-this.size / 2, 0, 0, -this.size / 2);
+          // p.line(0, -this.size / 2, this.size / 2, 0);
+          // p.line(this.size / 2, 0, 0, this.size / 2);
+          p.line(0, -this.size / 2, 0, this.size / 2);
+          p.line(-this.size / 2, 0, this.size / 2, 0);
           break;
 
         default:
-          p.rect(-this.size / 2, -this.size / 2, this.size - 2);
+          // p.rect(-this.size / 2, -this.size / 2, this.size - 2);
           break;
       }
       p.pop();
@@ -96,24 +108,24 @@ export default class Cell {
   private getNeighbors(): (Cell | null)[] {
     const neighbors: (Cell | null)[] = [];
     const directions: CellDirection[] = [
-      CellDirection.DOWN,
-      CellDirection.LEFT,
-      CellDirection.UP,
-      CellDirection.RIGHT,
+      CellDirection.DOWNTRI,
+      CellDirection.LEFTTRI,
+      CellDirection.UPTRI,
+      CellDirection.RIGHTTRI,
     ];
     for (const direction of directions) {
       const ni: number =
         this.i +
-        (direction === CellDirection.RIGHT
+        (direction === CellDirection.RIGHTTRI
           ? 1
-          : direction === CellDirection.LEFT
+          : direction === CellDirection.LEFTTRI
           ? -1
           : 0);
       const nj: number =
         this.j +
-        (direction === CellDirection.DOWN
+        (direction === CellDirection.DOWNTRI
           ? 1
-          : direction === CellDirection.UP
+          : direction === CellDirection.UPTRI
           ? -1
           : 0);
       if (ni >= 0 && ni < this.board.rows && nj >= 0 && nj < this.board.cols) {
@@ -127,7 +139,7 @@ export default class Cell {
   public getPossibleNeighborsDirections(): (CellDirection | null)[][] {
     const possibleNeighborsDirections: (CellDirection | null)[][] = [];
     switch (this.direction) {
-      case CellDirection.DOWN:
+      case CellDirection.DOWNTRI:
         possibleNeighborsDirections.push(
           neighborsForConnection[0],
           neighborsForConnection[1],
@@ -135,7 +147,7 @@ export default class Cell {
           neighborsForConnection[3]
         );
         break;
-      case CellDirection.LEFT:
+      case CellDirection.LEFTTRI:
         possibleNeighborsDirections.push(
           neighborsForConnection[0],
           neighborsForConnection[1],
@@ -143,7 +155,7 @@ export default class Cell {
           neighborsForIsolation[3]
         );
         break;
-      case CellDirection.UP:
+      case CellDirection.UPTRI:
         possibleNeighborsDirections.push(
           neighborsForIsolation[0],
           neighborsForConnection[1],
@@ -151,7 +163,7 @@ export default class Cell {
           neighborsForConnection[3]
         );
         break;
-      case CellDirection.RIGHT:
+      case CellDirection.RIGHTTRI:
         possibleNeighborsDirections.push(
           neighborsForConnection[0],
           neighborsForIsolation[1],
@@ -231,16 +243,48 @@ export default class Cell {
           neighborsForIsolation[3]
         );
         break;
+      case CellDirection.DOWN:
+        possibleNeighborsDirections.push(
+          neighborsForConnection[0],
+          neighborsForIsolation[1],
+          neighborsForIsolation[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.LEFT:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForConnection[1],
+          neighborsForIsolation[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.UP:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForIsolation[1],
+          neighborsForConnection[2],
+          neighborsForIsolation[3]
+        );
+        break;
+      case CellDirection.RIGHT:
+        possibleNeighborsDirections.push(
+          neighborsForIsolation[0],
+          neighborsForIsolation[1],
+          neighborsForIsolation[2],
+          neighborsForConnection[3]
+        );
+        break;
     }
     return possibleNeighborsDirections;
   }
   public collapse(): Cell | null {
     const neighbors: (Cell | null)[] = this.getNeighbors();
     const possibleDirections: CellDirection[] = [
-      CellDirection.DOWN,
-      CellDirection.LEFT,
-      CellDirection.UP,
-      CellDirection.RIGHT,
+      CellDirection.DOWNTRI,
+      CellDirection.LEFTTRI,
+      CellDirection.UPTRI,
+      CellDirection.RIGHTTRI,
       CellDirection.BLANK,
       CellDirection.HORIZONTAL,
       CellDirection.VERTICAL,
@@ -249,6 +293,10 @@ export default class Cell {
       CellDirection.UPRIGHT,
       CellDirection.DOWNRIGHT,
       CellDirection.CROSS,
+      CellDirection.DOWN,
+      CellDirection.LEFT,
+      CellDirection.UP,
+      CellDirection.RIGHT,
     ];
     const possibleAccordingToDownNeighbor: (CellDirection | null)[] =
       neighbors[0]?.getPossibleNeighborsDirections()[2] || possibleDirections;
@@ -259,6 +307,13 @@ export default class Cell {
     const possibleAccordingToRightNeighbor: (CellDirection | null)[] =
       neighbors[3]?.getPossibleNeighborsDirections()[1] || possibleDirections;
 
+    console.table([
+      possibleAccordingToDownNeighbor,
+      possibleAccordingToLeftNeighbor,
+      possibleAccordingToUpNeighbor,
+      possibleAccordingToRightNeighbor,
+    ]);
+
     const possibleDirectionsAccordingToNeighbors: CellDirection[] =
       possibleDirections.filter((direction: CellDirection): boolean => {
         return (
@@ -268,6 +323,7 @@ export default class Cell {
           possibleAccordingToRightNeighbor.includes(direction)
         );
       });
+    console.log(possibleDirectionsAccordingToNeighbors);
     this.setDirection(
       possibleDirectionsAccordingToNeighbors[
         Math.floor(
