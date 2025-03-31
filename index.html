@@ -1,13 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Wavvy</title>
   </head>
-  <body>
-    <div id="app"></div>
+  <body
+    class="bg-black flex flex-col-reverse gap-4 p-4 items-center justify-center h-screen">
+    <div class="flex flex-col-reverse text-white">
+      <label for="renderer" class="flex gap-2 items-center">
+        <p>renderer</p>
+        <select
+          id="renderer"
+          class="bg-gray-800 px-3 py-1 rounded-md text-white outline-none">
+          <option value="curve">curve</option>
+          <option value="segment">segment</option>
+        </select>
+      </label>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

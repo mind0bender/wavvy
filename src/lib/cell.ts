@@ -11,6 +11,7 @@ import {
   neighborsForConnection,
   neighborsForIsolation,
 } from "./neighbors";
+import { Renderer } from "../setup";
 
 export default class Cell {
   i: number;
@@ -37,14 +38,13 @@ export default class Cell {
   public isCollapsed(): boolean {
     return this.direction !== null;
   }
-  public draw(p: p5): void {
-    p.stroke("#000");
-    // if (this.isCollapsed()) {
-    //   p.fill("#000");
-    // } else {
-    //   p.stroke("#1e1e1e");
-    //   p.fill("#111");
-    // }
+  public draw(p: p5, renderer: Renderer): void {
+    p.stroke("#101010");
+    if (this.isCollapsed()) {
+      p.fill("#000");
+    } else {
+      p.fill("#050505");
+    }
     p.rect(this.i * this.size, this.j * this.size, this.size, this.size);
     p.stroke("#aeaeae");
     if (this.direction !== null) {
@@ -53,54 +53,176 @@ export default class Cell {
         this.i * this.size + this.size / 2,
         this.j * this.size + this.size / 2
       );
-      switch (this.direction) {
-        case CellDirection.DOWNTRI:
-        case CellDirection.UPTRI:
-        case CellDirection.LEFTTRI:
-        case CellDirection.RIGHTTRI:
-          p.rotate(this.direction * (Math.PI / 2));
-          p.line(0, 0, 0, this.size / 2);
-          p.line(-this.size / 2, 0, this.size / 2, 0);
-          break;
-        case CellDirection.DOWN:
-        case CellDirection.UP:
-        case CellDirection.LEFT:
-        case CellDirection.RIGHT:
-          p.fill("#000");
-          p.rotate((this.direction - 12) * (Math.PI / 2));
-          p.line(0, 0, 0, this.size / 2);
-          p.circle(0, 0, this.size / 6);
-          break;
-        case CellDirection.HORIZONTAL:
-          p.line(-this.size / 2, 0, this.size / 2, 0);
-          break;
-        case CellDirection.VERTICAL:
-          p.line(0, -this.size / 2, 0, this.size / 2);
-          break;
-        case CellDirection.DOWNLEFT:
-          p.line(0, this.size / 2, -this.size / 2, 0);
-          break;
-        case CellDirection.UPLEFT:
-          p.line(-this.size / 2, 0, 0, -this.size / 2);
-          break;
-        case CellDirection.UPRIGHT:
-          p.line(0, -this.size / 2, this.size / 2, 0);
-          break;
-        case CellDirection.DOWNRIGHT:
-          p.line(this.size / 2, 0, 0, this.size / 2);
-          break;
-        case CellDirection.CROSS:
-          // p.line(0, this.size / 2, -this.size / 2, 0);
-          // p.line(-this.size / 2, 0, 0, -this.size / 2);
-          // p.line(0, -this.size / 2, this.size / 2, 0);
-          // p.line(this.size / 2, 0, 0, this.size / 2);
-          p.line(0, -this.size / 2, 0, this.size / 2);
-          p.line(-this.size / 2, 0, this.size / 2, 0);
-          break;
+      switch (renderer) {
+        case Renderer.SEGMENT:
+          switch (this.direction) {
+            case CellDirection.DOWNTRI:
+            case CellDirection.UPTRI:
+            case CellDirection.LEFTTRI:
+            case CellDirection.RIGHTTRI:
+              p.rotate(this.direction * (Math.PI / 2));
+              p.line(0, 0, 0, this.size / 2);
+              p.line(-this.size / 2, 0, this.size / 2, 0);
+              break;
+            case CellDirection.DOWN:
+            case CellDirection.UP:
+            case CellDirection.LEFT:
+            case CellDirection.RIGHT:
+              p.fill("#000");
+              p.rotate((this.direction - 12) * (Math.PI / 2));
+              p.line(0, 0, 0, this.size / 2);
+              p.circle(0, 0, this.size / 6);
+              break;
+            case CellDirection.HORIZONTAL:
+              p.line(-this.size / 2, 0, this.size / 2, 0);
+              break;
+            case CellDirection.VERTICAL:
+              p.line(0, -this.size / 2, 0, this.size / 2);
+              break;
+            case CellDirection.DOWNLEFT:
+              p.line(0, this.size / 2, -this.size / 2, 0);
+              break;
+            case CellDirection.UPLEFT:
+              p.line(-this.size / 2, 0, 0, -this.size / 2);
+              break;
+            case CellDirection.UPRIGHT:
+              p.line(0, -this.size / 2, this.size / 2, 0);
+              break;
+            case CellDirection.DOWNRIGHT:
+              p.line(this.size / 2, 0, 0, this.size / 2);
+              break;
+            case CellDirection.CROSS:
+              // p.line(0, this.size / 2, -this.size / 2, 0);
+              // p.line(-this.size / 2, 0, 0, -this.size / 2);
+              // p.line(0, -this.size / 2, this.size / 2, 0);
+              // p.line(this.size / 2, 0, 0, this.size / 2);
+              p.line(0, -this.size / 2, 0, this.size / 2);
+              p.line(-this.size / 2, 0, this.size / 2, 0);
+              break;
 
-        default:
-          // p.rect(-this.size / 2, -this.size / 2, this.size - 2);
+            default:
+              // p.rect(-this.size / 2, -this.size / 2, this.size - 2);
+              break;
+          }
           break;
+        case Renderer.CURVE:
+          switch (this.direction) {
+            case CellDirection.DOWNTRI:
+            case CellDirection.UPTRI:
+            case CellDirection.LEFTTRI:
+            case CellDirection.RIGHTTRI:
+              p.rotate(this.direction * (Math.PI / 2));
+              p.arc(
+                -this.size / 2,
+                this.size / 2,
+                this.size,
+                this.size,
+                -p.HALF_PI,
+                0
+              );
+              p.arc(
+                this.size / 2,
+                this.size / 2,
+                this.size,
+                this.size,
+                -p.PI,
+                -p.HALF_PI
+              );
+              break;
+            case CellDirection.DOWN:
+            case CellDirection.UP:
+            case CellDirection.LEFT:
+            case CellDirection.RIGHT:
+              p.fill("#000");
+              p.rotate((this.direction - 12) * (Math.PI / 2));
+              p.line(0, 0, 0, this.size / 2);
+              p.circle(0, 0, this.size / 6);
+              break;
+            case CellDirection.HORIZONTAL:
+              p.line(-this.size / 2, 0, this.size / 2, 0);
+              break;
+            case CellDirection.VERTICAL:
+              p.line(0, -this.size / 2, 0, this.size / 2);
+              break;
+            case CellDirection.DOWNLEFT:
+              p.arc(
+                -this.size / 2,
+                this.size / 2,
+                this.size,
+                this.size,
+                -p.HALF_PI,
+                0
+              );
+              break;
+            case CellDirection.UPLEFT:
+              p.arc(
+                -this.size / 2,
+                -this.size / 2,
+                this.size,
+                this.size,
+                0,
+                p.HALF_PI
+              );
+              break;
+            case CellDirection.UPRIGHT:
+              p.arc(
+                this.size / 2,
+                -this.size / 2,
+                this.size,
+                this.size,
+                0,
+                p.PI
+              );
+              break;
+            case CellDirection.DOWNRIGHT:
+              p.arc(
+                this.size / 2,
+                this.size / 2,
+                this.size,
+                this.size,
+                -p.PI,
+                -p.HALF_PI
+              );
+              break;
+            case CellDirection.CROSS:
+              p.arc(
+                this.size / 2,
+                this.size / 2,
+                this.size,
+                this.size,
+                -p.PI,
+                -p.HALF_PI
+              );
+              p.arc(
+                this.size / 2,
+                -this.size / 2,
+                this.size,
+                this.size,
+                0,
+                p.PI
+              );
+              p.arc(
+                -this.size / 2,
+                -this.size / 2,
+                this.size,
+                this.size,
+                0,
+                p.HALF_PI
+              );
+              p.arc(
+                -this.size / 2,
+                this.size / 2,
+                this.size,
+                this.size,
+                -p.HALF_PI,
+                0
+              );
+              break;
+
+            default:
+              // p.rect(-this.size / 2, -this.size / 2, this.size - 2);
+              break;
+          }
       }
       p.pop();
     }
@@ -307,12 +429,12 @@ export default class Cell {
     const possibleAccordingToRightNeighbor: (CellDirection | null)[] =
       neighbors[3]?.getPossibleNeighborsDirections()[1] || possibleDirections;
 
-    console.table([
-      possibleAccordingToDownNeighbor,
-      possibleAccordingToLeftNeighbor,
-      possibleAccordingToUpNeighbor,
-      possibleAccordingToRightNeighbor,
-    ]);
+    // console.table([
+    //   possibleAccordingToDownNeighbor,
+    //   possibleAccordingToLeftNeighbor,
+    //   possibleAccordingToUpNeighbor,
+    //   possibleAccordingToRightNeighbor,
+    // ]);
 
     const possibleDirectionsAccordingToNeighbors: CellDirection[] =
       possibleDirections.filter((direction: CellDirection): boolean => {
@@ -323,7 +445,7 @@ export default class Cell {
           possibleAccordingToRightNeighbor.includes(direction)
         );
       });
-    console.log(possibleDirectionsAccordingToNeighbors);
+    // console.log(possibleDirectionsAccordingToNeighbors);
     this.setDirection(
       possibleDirectionsAccordingToNeighbors[
         Math.floor(

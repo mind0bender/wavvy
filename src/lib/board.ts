@@ -1,4 +1,6 @@
+import p5 from "p5";
 import Cell from "./cell";
+import { Renderer } from "../setup";
 
 export default class Board {
   grid: Cell[][];
@@ -18,10 +20,10 @@ export default class Board {
     }
   }
 
-  public draw(p: any): void {
+  public draw(p: p5, renderer: Renderer): void {
     for (let i: number = 0; i < this.rows; i++) {
       for (let j: number = 0; j < this.cols; j++) {
-        this.grid[i][j].draw(p);
+        this.grid[i][j].draw(p, renderer);
       }
     }
   }

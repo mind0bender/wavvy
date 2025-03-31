@@ -1,8 +1,7 @@
 import p5 from "p5";
-import { board } from "./setup";
+import { board, renderer } from "./setup";
 
 export default function draw(p: p5): void {
-  // if (p.frameCount < 120) return;
   board.collapse();
-  board.draw(p);
+  board.draw(p, renderer);
 }

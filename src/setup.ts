@@ -3,12 +3,18 @@ import Board from "./lib/board";
 
 export let board: Board;
 
+export enum Renderer {
+  CURVE = "curve",
+  SEGMENT = "segment",
+}
+export let renderer: Renderer = Renderer.CURVE;
+
 export default function setup(p: p5): void {
   const minWidth: number =
     [innerHeight, innerWidth][Number(innerHeight > innerWidth)] - 40 * 2;
   p.createCanvas(minWidth, minWidth);
   // p.frameRate(1);
-  p.mousePressed = (): void => {
+  p.doubleClicked = (): void => {
     if (p.isLooping()) {
       p.noLoop();
     } else {
@@ -24,4 +30,9 @@ export default function setup(p: p5): void {
   Object.defineProperty(window, "board", {
     get: (): Board => board,
   } as PropertyDescriptorMap & ThisType<any>);
+
+  const rendererType = document.getElementById("renderer") as HTMLSelectElement;
+  rendererType.addEventListener("change", () => {
+    renderer = rendererType.value as Renderer;
+  });
 }
