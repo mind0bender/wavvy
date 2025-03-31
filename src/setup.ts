@@ -21,7 +21,7 @@ export default function setup(p: p5): void {
       p.loop();
     }
   };
-  board = new Board(25, 25, minWidth / 25);
+  board = new Board(32, 32, minWidth / 32);
   p.fill("#000");
   p.stroke("#1e1e1e");
   Object.defineProperty(window, "p", {

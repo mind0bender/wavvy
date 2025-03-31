@@ -9,16 +9,28 @@
   </head>
   <body
     class="bg-black flex flex-col-reverse gap-4 p-4 items-center justify-center h-screen">
-    <div class="flex flex-col-reverse text-white">
+    <div class="flex flex-row justify-around w-full text-white">
       <label for="renderer" class="flex gap-2 items-center">
         <p>renderer</p>
         <select
           id="renderer"
+          autofocus
           class="bg-gray-800 px-3 py-1 rounded-md text-white outline-none">
           <option value="curve">curve</option>
           <option value="segment">segment</option>
         </select>
       </label>
+      <a
+        class="bg-gray-800 px-3 py-1 rounded-md text-white flex justify-center items-center gap-2"
+        href="http://github.com/mind0bender/wavvy.git"
+        target="_blank"
+        rel="noopener noreferrer">
+        <img
+          class="h-4 aspect-square"
+          src="/github-mark-white.svg"
+          alt="GitHub Repository" />
+        GitHub
+      </a>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

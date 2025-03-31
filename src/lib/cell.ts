@@ -432,9 +432,6 @@ export default class Cell {
     // console.table([
     //   possibleAccordingToDownNeighbor,
     //   possibleAccordingToLeftNeighbor,
-    //   possibleAccordingToUpNeighbor,
-    //   possibleAccordingToRightNeighbor,
-    // ]);
 
     const possibleDirectionsAccordingToNeighbors: CellDirection[] =
       possibleDirections.filter((direction: CellDirection): boolean => {
